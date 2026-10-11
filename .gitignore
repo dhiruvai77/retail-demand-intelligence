@@ -36,3 +36,6 @@ data/curated/*
 
 # Data-quality reports are generated locally and later stored in S3.
 data/quality/*
+
+# Feature datasets are generated locally and later stored in S3.
+data/features/*
