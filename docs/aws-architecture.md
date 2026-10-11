@@ -38,7 +38,7 @@ Retail data -> Amazon S3
 - Use a batch-first architecture.
 - Use one AWS region initially.
 - Store curated data as partitioned Parquet.
-- Partition primarily by store and date.
+- Partition by store, year, and month; retain date as a queryable column.
 - Keep raw datasets outside Git.
 - Do not use a continuously running SageMaker endpoint initially.
 - Reuse the existing data preparation, feature engineering, and model logic where possible.
