@@ -39,3 +39,6 @@ data/quality/*
 
 # Feature datasets are generated locally and later stored in S3.
 data/features/*
+
+# Batch predictions are generated locally and later stored in S3.
+data/predictions/*
