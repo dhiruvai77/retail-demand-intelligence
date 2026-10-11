@@ -10,15 +10,15 @@ The current project prepares retail demand data, creates forecasting features, t
 
 ## Target architecture
 
-Retail data -> Amazon S3  
--> AWS Glue ETL and data validation  
--> Partitioned Parquet data  
--> Glue Data Catalog  
--> Athena SQL analytics  
--> SageMaker model training  
--> Model versioning  
--> SageMaker batch inference  
--> Forecast outputs in S3  
+Retail data -> Amazon S3
+-> AWS Glue ETL and data validation
+-> Partitioned Parquet data
+-> Glue Data Catalog
+-> Athena SQL analytics
+-> SageMaker model training
+-> Model versioning
+-> SageMaker batch inference
+-> Forecast outputs in S3
 -> API or dashboard delivery
 
 ## Planned AWS services
