@@ -1,4 +1,5 @@
 # Retail Demand Intelligence
+
 [![Tests](https://github.com/dhiruvai77/retail-demand-intelligence/actions/workflows/tests.yml/badge.svg)](https://github.com/dhiruvai77/retail-demand-intelligence/actions/workflows/tests.yml)
 
 ## At a Glance
@@ -92,6 +93,8 @@ Inference Pipeline
      +-----------> FastAPI
      |
      +-----------> SQL Analytics
+     |
+     +-----------> S3 / Glue / Athena batch validation
 ```
 
 ## Exploratory Findings
@@ -424,6 +427,52 @@ Includes queries for:
 
 All SQL statements are automatically executed against an in-memory SQLite database during testing.
 
+## AWS Batch Forecast Validation
+
+The local forecasting pipeline was extended with a one-time AWS workflow to store and query a forecast run.
+
+- Uploaded trained model artifacts, engineered features, and forecast outputs to a private Amazon S3 bucket.
+- Used an on-demand AWS Glue crawler to catalog the forecast Parquet file in the Glue Data Catalog.
+- Queried and validated the results in Amazon Athena.
+- Deleted the temporary S3 bucket after validation. This project does not currently provide a live AWS endpoint or queryable cloud dataset.
+
+The validated forecast covers **store `CA_1`**, **3,049 items**, and **28 days**, from **2016-04-25 to 2016-05-22**.
+
+| Athena validation | Result |
+|---|---:|
+| Forecast rows | 85,372 |
+| Poisson forecast total | 128,071.67 units |
+| Two-stage forecast total | 105,550.98 units |
+| Average positive-demand probability | 0.462 |
+
+The `prediction` column total matched the Poisson forecast total. These figures describe predicted demand, not actual sales or forecast accuracy.
+
+Athena analysis also showed that the `FOODS_3` category had the largest forecast total, approximately **61,786.16 units** (about **48.2%** of all forecast units). A category-level comparison showed the difference in forecast volume between the Poisson and two-stage approaches; it does not indicate which model is more accurate.
+
+### AWS evidence screenshots
+
+The screenshots below document the temporary AWS validation run. Copy the matching image files into `docs/screenshots/` in the repository before committing this README.
+
+#### S3 artifact layout
+
+![S3 objects and artifact folders](docs/screenshots/S3-objects.png)
+
+#### Glue crawler success
+
+![AWS Glue crawler completed successfully](docs/screenshots/glue-crawler-success.png)
+
+#### Athena validation
+
+![Athena forecast row count, date range, and totals](docs/screenshots/athena-validation.png)
+
+#### Forecast by category
+
+![Athena forecast totals by item category](docs/screenshots/athena-category-forecast.png)
+
+#### Forecast strategy comparison
+
+![Poisson and two-stage forecast totals by category](docs/screenshots/athena-forecast-strategy-comparison-by-category.png)
+
 ## Automated Testing
 
 The project currently contains **94 passing automated tests** covering:
@@ -457,7 +506,12 @@ retail-demand-intelligence/
 |-- data/
 |   |-- raw/
 |   |-- interim/
-|   `-- processed/
+|   |-- processed/
+|   |-- features/
+|   `-- predictions/
+|
+|-- docs/
+|   `-- screenshots/
 |
 |-- notebooks/
 |   |-- 01_data_inspection.ipynb
@@ -539,6 +593,7 @@ sell_prices.csv
 ```bash
 python -m pytest -q
 ```
+
 ## Docker
 
 The FastAPI service can also be run in a Docker container, providing a reproducible environment without requiring a local Python setup.
@@ -587,6 +642,11 @@ Docker image builds are also validated automatically through the GitHub Actions 
 - FastAPI
 - Uvicorn
 - SQLite / SQL
+- boto3
+- Amazon S3
+- AWS Glue Data Catalog
+- Amazon Athena
+- AWS CLI
 - pytest
 - JupyterLab
 - Git / GitHub
@@ -605,7 +665,8 @@ Several design decisions were made to keep the project realistic and reproducibl
 - reusable inference rather than notebook-only prediction,
 - API logic separated from ML inference logic,
 - automated testing of both Python and SQL components,
-- large datasets and generated model artifacts excluded from Git.
+- large datasets and generated model artifacts excluded from Git,
+- temporary cloud storage and query resources removed after AWS validation.
 
 ## Future Improvements
 
@@ -615,9 +676,7 @@ Potential extensions include:
 - hierarchical forecast reconciliation,
 - probabilistic prediction intervals,
 - model monitoring and drift detection,
-- containerization with Docker,
-- cloud deployment,
-- CI/CD with GitHub Actions,
+- automated cloud orchestration and scheduled forecasting,
 - multi-store forecasting,
 - richer model explainability.
 
@@ -627,4 +686,4 @@ Potential extensions include:
 
 Master's graduate in Data Science from Dalarna University, Sweden.
 
-This project demonstrates an end-to-end data science and machine learning workflow, from raw data preparation and exploratory analysis to forecasting, evaluation, production inference, API development, SQL analytics, and automated testing.
+This project demonstrates an end-to-end data science and machine learning workflow, from raw data preparation and exploratory analysis to forecasting, evaluation, production inference, API development, SQL analytics, automated testing, and cloud-based batch validation.

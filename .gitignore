@@ -30,3 +30,15 @@ data/processed/*
 # Trained model artifacts are generated locally and can be large.
 # Keep the directory structure local rather than versioning model binaries.
 artifacts/models/*
+
+# Curated Parquet datasets are generated locally and later stored in S3.
+data/curated/*
+
+# Data-quality reports are generated locally and later stored in S3.
+data/quality/*
+
+# Feature datasets are generated locally and later stored in S3.
+data/features/*
+
+# Batch predictions are generated locally and later stored in S3.
+data/predictions/*
